@@ -7,7 +7,6 @@ import json
 import time
 import os
 from dotenv import load_dotenv
-import psycopg2
 from dbRequest import DatabaseAction
 
 load_dotenv()

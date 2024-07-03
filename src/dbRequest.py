@@ -18,7 +18,7 @@ class DatabaseAction():
 
         self.conn = psycopg2.connect(**db_params)
         self.cursor = self.conn.cursor()
-        
+
     def database_Exists(self, databaseName):
         self.cursor.execute(psycopg2.sql.SQL("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s);"), [databaseName])
         return self.cursor.fetchone()[0]
