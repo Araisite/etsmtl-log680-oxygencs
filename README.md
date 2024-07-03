@@ -1,3 +1,67 @@
+# LOG-680 - E24 - Grp1 - Eq13
+
+## Install all packages
+You need to run:
+
+```bash
+pipenv install
+pip install python-dotenv black pylint
+```
+
+## Pre-commit file
+Your pre-commit file should look like this:
+
+./.git/hooks/pre-commit
+```bash
+#!/bin/bash
+
+# Ensure Python executable and scripts are in the PATH
+export PATH=%LOCALAPPDATA%/Programs/Python/Python312/python.exe:%LOCALAPPDATA%/Programs/Python/Python312/Scripts:$PATH
+
+files=$(git diff --cached --name-only --diff-filter=ACM "*.py" | tr '\n' ' ')
+
+pylint $files
+pylint_exit=$?
+
+
+black --check $files
+black_exit=$?
+
+echo "The result of python pylint module: $pylint_exit"
+echo "The result of python black module: $black_exit"
+echo "For the 2 lines above anything different of 0 is not good..."
+echo ""
+echo "Will commit in 3 seconds whatever the previous results were..."
+sleep 3
+
+
+# FOR PROD UNCOMMENT THIS TO MAKE SURE THE SYNTAX IS ABSOLUTELY PERFECT BEFORE DOING THE COMMIT
+#if [ $pylint_exit -ne 0 ] || [ $black_exit -ne 0 ]; then
+#    echo "Linting or formatting check failed. Commit aborted."
+#    exit 1
+#fi
+
+exit 0
+```
+
+## .env file
+Your ./.env file should look like this
+
+```
+#HVAC Simulator
+HOST=http://XXX.XXX.XXX.XXX
+TOKEN=XXXXXXXX
+T_MAX=22
+T_MIN=18
+
+#Database
+DATABASE_URL=XXX.XXX.XXX.XXX
+DB_NAME=XXXXXXX
+DB_USER=XXXXXX
+DB_PASS=XXXXXX
+DB_PORT=XXXX
+```
+
 # LOG-680 : Template for Oxygen-CS
 
 This Python application continuously monitors a sensor hub and manages HVAC (Heating, Ventilation, and Air Conditioning) system actions based on received sensor data.

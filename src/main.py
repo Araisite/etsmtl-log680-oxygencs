@@ -1,3 +1,5 @@
+"""The main app is there !"""
+
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 import logging
 import requests
@@ -5,7 +7,6 @@ import json
 import time
 import os
 from dotenv import load_dotenv
-import psycopg2
 from dbRequest import DatabaseAction
 
 load_dotenv()
