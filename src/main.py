@@ -5,6 +5,8 @@ import json
 import time
 import os
 from dotenv import load_dotenv
+import psycopg2
+from dbRequest import DatabaseAction
 
 load_dotenv()
 
@@ -19,6 +21,9 @@ class App:
         self.T_MAX = os.getenv('T_MAX')
         self.T_MIN = os.getenv('T_MIN')
         self.DATABASE_URL = os.getenv('DATABASE_URL')
+
+        self.dbRequest = DatabaseAction()
+        self.dbRequest.create_table("temperature_data")
 
     def __del__(self):
         if self._hub_connection != None:
@@ -92,3 +97,5 @@ class App:
 if __name__ == "__main__":
     app = App()
     app.start()
+
+    app.dbRequest.close_DB_conn()
