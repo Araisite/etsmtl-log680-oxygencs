@@ -1,3 +1,5 @@
+"""The main app is there !"""
+
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 import logging
 import requests

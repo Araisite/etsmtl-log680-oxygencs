@@ -1,3 +1,5 @@
+"""The database management is done here !"""
+
 import os
 from dotenv import load_dotenv
 import psycopg2
