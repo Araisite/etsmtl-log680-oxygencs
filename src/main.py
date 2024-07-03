@@ -23,7 +23,8 @@ class App:
         self.DATABASE_URL = os.getenv('DATABASE_URL')
 
         self.dbRequest = DatabaseAction()
-        self.dbRequest.create_table()
+        self.dbRequest.create_temperature_table()
+        self.dbRequest.create_HVAC_Action_table()
 
     def __del__(self):
         if self._hub_connection != None:
@@ -66,17 +67,22 @@ class App:
             print(data[0]["date"] + " --> " + data[0]["data"], flush=True)
             timestamp = data[0]["date"]
             temperature = float(data[0]["data"])
-            self.take_action(temperature)
+            self.take_action(timestamp, temperature)
             self.save_event_to_database(timestamp, temperature)
         except Exception as err:
             print(err)
 
-    def take_action(self, temperature):
+    def take_action(self, timestamp, temperature):
         """Take action to HVAC depending on current temperature."""
+        action = ""
+
         if float(temperature) >= float(self.T_MAX):
-            self.send_action_to_hvac("TurnOnAc")
+            action = "TurnOnAc"
         elif float(temperature) <= float(self.T_MIN):
-            self.send_action_to_hvac("TurnOnHeater")
+            action = "TurnOnHeater"
+            
+        self.send_action_to_hvac(action)
+        self.dbRequest.push_to_hvacAction_database(timestamp, action)
 
     def send_action_to_hvac(self, action):
         """Send action query to the HVAC service."""
@@ -87,7 +93,7 @@ class App:
     def save_event_to_database(self, timestamp, temperature):
         """Save sensor data into database."""
         try:
-            self.dbRequest.push_to_database(timestamp, temperature)
+            self.dbRequest.push_to_temperature_database(timestamp, temperature)
             pass
         except requests.exceptions.RequestException as e:
             print(f"An error occurred: {e}")

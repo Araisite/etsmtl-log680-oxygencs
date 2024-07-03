@@ -14,18 +14,16 @@ class DatabaseAction():
             'port': os.getenv('DB_PORT')
         }
 
-        self.databaseName = "temperature_data"
-
         self.conn = psycopg2.connect(**db_params)
         self.cursor = self.conn.cursor()
         
-    def database_Exists(self):
-        self.cursor.execute(psycopg2.sql.SQL("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s);"), [self.databaseName])
+    def database_Exists(self, databaseName):
+        self.cursor.execute(psycopg2.sql.SQL("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = %s);"), [databaseName])
         return self.cursor.fetchone()[0]
 
-    def create_table(self):
-        if not self.database_Exists():
-            query = f'''CREATE TABLE {self.databaseName}
+    def create_temperature_table(self):
+        if not self.database_Exists("temperature_data"):
+            query = '''CREATE TABLE temperature_data
                         (timestamp TIMESTAMP NOT NULL,
                         temperature FLOAT); 
                     '''
@@ -37,9 +35,23 @@ class DatabaseAction():
                 print(f"An error occurred: {e}")
                 self.conn.rollback()
 
-    def push_to_database(self, timestamp: str, temperature: float):
-        query = f"""
-            INSERT INTO {self.databaseName} (timestamp, temperature)
+    def create_HVAC_Action_table(self):
+        if not self.database_Exists("hvac_data"):
+            query = '''CREATE TABLE hvac_data
+                        (timestamp TIMESTAMP NOT NULL,
+                        action TEXT); 
+                    '''
+            try:
+                self.cursor.execute(query)
+                self.conn.commit()
+                print("Table create successfully")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                self.conn.rollback()
+
+    def push_to_temperature_database(self, timestamp: str, temperature: float):
+        query = """
+            INSERT INTO temperature_data (timestamp, temperature)
             VALUES (%s, %s);
         """
 
@@ -47,6 +59,21 @@ class DatabaseAction():
             reading_timestamp = parser.isoparse(timestamp) #Parse the str temperature to datetime
 
             self.cursor.execute(query, [reading_timestamp, temperature])
+            self.conn.commit()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            self.conn.rollback()
+    
+    def push_to_hvacAction_database(self, timestamp: str, action: str):
+        query = """
+            INSERT INTO hvac_data (timestamp, action)
+            VALUES (%s, %s);
+        """
+
+        try:
+            reading_timestamp = parser.isoparse(timestamp) #Parse the str temperature to datetime
+
+            self.cursor.execute(query, [reading_timestamp, action])
             self.conn.commit()
         except Exception as e:
             print(f"An error occurred: {e}")
