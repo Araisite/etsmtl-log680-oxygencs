@@ -23,7 +23,7 @@ class App:
         self.DATABASE_URL = os.getenv('DATABASE_URL')
 
         self.dbRequest = DatabaseAction()
-        self.dbRequest.create_table("temperature_data")
+        self.dbRequest.create_table()
 
     def __del__(self):
         if self._hub_connection != None:
@@ -87,10 +87,10 @@ class App:
     def save_event_to_database(self, timestamp, temperature):
         """Save sensor data into database."""
         try:
-            # To implement
+            self.dbRequest.push_to_database(timestamp, temperature)
             pass
         except requests.exceptions.RequestException as e:
-            # To implement
+            print(f"An error occurred: {e}")
             pass
 
 
