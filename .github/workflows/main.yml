@@ -22,8 +22,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install pipenv
         pipenv install
-        pipenv install --dev black
-        pipenv install --dev pylint
+        pip install black
+        pip install pylint
 
     - name: Lint and format
       run: |
