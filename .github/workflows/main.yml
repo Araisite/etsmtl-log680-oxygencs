@@ -56,4 +56,4 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker buildx build --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache --tag ${{ secrets.DOCKER_USERNAME }}/my-app:latest --tag ${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }} --push .
+        docker buildx build --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache --tag ${{ secrets.DOCKER_USERNAME }}/log680-devops:latest --tag ${{ secrets.DOCKER_USERNAME }}/log680-devops:${{ github.sha }} --push .
