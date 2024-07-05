@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Ensure Python executable and scripts are in the PATH
 export PATH=$LOCALAPPDATA/Programs/Python/Python312/python.exe:$LOCALAPPDATA/Programs/Python/Python312/Scripts:$PATH
