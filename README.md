@@ -1,6 +1,7 @@
 # LOG-680 - E24 - Grp1 - Eq13
 
 ## Install all packages
+
 You need to run:
 
 ```bash
@@ -9,9 +10,11 @@ pip install python-dotenv black pylint
 ```
 
 ## Pre-commit file
+
 Your pre-commit file should look like this:
 
 ./.git/hooks/pre-commit
+
 ```bash
 #!/bin/bash
 
@@ -45,6 +48,7 @@ exit 0
 ```
 
 ## .env file
+
 Your ./.env file should look like this
 
 ```
@@ -60,6 +64,24 @@ DB_NAME=XXXXXXX
 DB_USER=XXXXXX
 DB_PASS=XXXXXX
 DB_PORT=XXXX
+```
+
+# Docker
+
+## Build and run the docker image
+
+Since we don't include the .env file into the image, we have to pass it as a parameter when we run the image. Hence :
+
+### Building the image
+
+```sh
+docker build -t my-image .
+```
+
+### Running the image
+
+```sh
+docker run --env-file .env my-image
 ```
 
 # LOG-680 : Template for Oxygen-CS
