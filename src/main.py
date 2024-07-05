@@ -21,8 +21,6 @@ T_MAX = float(os.getenv("T_MAX"))
 T_MIN = float(os.getenv("T_MIN"))
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Test
-
 
 class App:
     """Main application"""
