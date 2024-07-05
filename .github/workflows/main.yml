@@ -3,57 +3,57 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main
+      - main  # Le pipeline se déclenche lors d'un push sur la branche principale
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
+  lint:  # Définition du job de linting
+    runs-on: ubuntu-latest  # Spécifie que le job s'exécute sur une machine virtuelle Ubuntu
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout code  # Étape pour vérifier le code source
+      uses: actions/checkout@v2  # Utilise l'action officielle pour extraire le code source du repository
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Python  # Étape pour configurer l'environnement Python
+      uses: actions/setup-python@v2  # Utilise l'action officielle pour configurer Python
       with:
-        python-version: '3.8'
+        python-version: '3.8'  # Spécifie la version de Python à utiliser
 
-    - name: Install dependencies
+    - name: Install dependencies  # Étape pour installer les dépendances nécessaires
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade pip 
         pip install pipenv
-        pipenv install
-        pip install black
+        pipenv install 
+        pip install black 
         pip install pylint
 
-    - name: Lint and format
+    - name: Lint and format  # Étape pour analyser et formater le code
       run: |
-        pylint src/
-        black --check src/
+        pylint src/  # Exécute Pylint sur le répertoire src/
+        black --check src/  # Vérifie le formatage du code avec Black sans appliquer de modifications
 
-        
-  build:
-    runs-on: ubuntu-latest
+  build:  # Définition du job de build
+    runs-on: ubuntu-latest  # Spécifie que le job s'exécute sur une machine virtuelle Ubuntu
+    needs: lint  # Spécifie que ce job dépend du job lint et ne s'exécutera que si lint réussit
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout code  # Étape pour vérifier le code source
+      uses: actions/checkout@v2  # Utilise l'action officielle pour extraire le code source du repository
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+    - name: Set up Docker Buildx  # Étape pour configurer Docker Buildx
+      uses: docker/setup-buildx-action@v1  # Utilise l'action officielle pour configurer Docker Buildx
 
-    - name: Cache Docker layers
-      uses: actions/cache@v2
+    - name: Cache Docker layers  # Étape pour mettre en cache les couches Docker
+      uses: actions/cache@v2  # Utilise l'action de cache officielle
       with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        path: /tmp/.buildx-cache  # Spécifie le chemin du cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}  # Clé unique pour le cache basé sur le SHA du commit
         restore-keys: |
-          ${{ runner.os }}-buildx-
+          ${{ runner.os }}-buildx-  # Clé de restauration pour trouver un cache similaire
 
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
+    - name: Login to DockerHub  # Étape pour se connecter à DockerHub
+      uses: docker/login-action@v1  # Utilise l'action officielle pour se connecter à DockerHub
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        username: ${{ secrets.DOCKER_USERNAME }}  # Utilise le secret GitHub pour le nom d'utilisateur DockerHub
+        password: ${{ secrets.DOCKER_PASSWORD }}  # Utilise le secret GitHub pour le mot de passe DockerHub
 
-    - name: Build and push Docker image
+    - name: Build and push Docker image  # Étape pour construire et pousser l'image Docker
       run: |
-        docker buildx build --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache --tag ${{ secrets.DOCKER_USERNAME }}/log680-devops:latest --tag ${{ secrets.DOCKER_USERNAME }}/log680-devops:${{ github.sha }} --push .
+        docker buildx build --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache --tag ${{ secrets.DOCKER_USERNAME }}/log680-devops:latest --tag ${{ secrets.DOCKER_USERNAME }}/log680-devops:${{ github.sha }} --push
