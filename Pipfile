@@ -8,6 +8,7 @@ requests = "*"
 signalrcore = "*"
 python-dotenv = "*"
 psycopg2 = "*"
+python-dateutil = "*"
 
 [dev-packages]
 

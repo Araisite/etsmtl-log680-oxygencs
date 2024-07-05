@@ -1,34 +1,40 @@
-"""The main app is there !"""
+"""The main app is there!"""
 
-from signalrcore.hub_connection_builder import HubConnectionBuilder
 import logging
-import requests
 import json
 import time
 import os
+import requests
+
+from signalrcore.hub_connection_builder import HubConnectionBuilder
+
 from dotenv import load_dotenv
-from dbRequest import DatabaseAction
+
+from db_request import DatabaseAction
 
 load_dotenv()
 
+# Global variables for environment variables
+HOST = os.getenv("HOST")
+TOKEN = os.getenv("TOKEN")
+T_MAX = float(os.getenv("T_MAX"))
+T_MIN = float(os.getenv("T_MIN"))
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
 class App:
+    """Main application"""
+
     def __init__(self):
         self._hub_connection = None
-        self.TICKS = 10
+        self.ticks = 10
 
-        # To be configured by your team
-        self.HOST = os.getenv('HOST')
-        self.TOKEN = os.getenv('TOKEN')
-        self.T_MAX = os.getenv('T_MAX')
-        self.T_MIN = os.getenv('T_MIN')
-        self.DATABASE_URL = os.getenv('DATABASE_URL')
-
-        self.dbRequest = DatabaseAction()
-        self.dbRequest.create_temperature_table()
-        self.dbRequest.create_HVAC_Action_table()
+        self.db_request = DatabaseAction()
+        self.db_request.create_temperature_table()
+        self.db_request.create_hvac_action_table()
 
     def __del__(self):
-        if self._hub_connection != None:
+        if self._hub_connection is not None:
             self._hub_connection.stop()
 
     def start(self):
@@ -43,7 +49,7 @@ class App:
         """Configure hub connection and subscribe to sensor data events."""
         self._hub_connection = (
             HubConnectionBuilder()
-            .with_url(f"{self.HOST}/SensorHub?token={self.TOKEN}")
+            .with_url(f"{HOST}/SensorHub?token={TOKEN}")
             .configure_logging(logging.INFO)
             .with_automatic_reconnect(
                 {
@@ -77,32 +83,33 @@ class App:
         """Take action to HVAC depending on current temperature."""
         action = ""
 
-        if float(temperature) >= float(self.T_MAX):
+        if temperature >= T_MAX:
             action = "TurnOnAc"
-        elif float(temperature) <= float(self.T_MIN):
+        elif temperature <= T_MIN:
             action = "TurnOnHeater"
-            
         self.send_action_to_hvac(action)
-        self.dbRequest.push_to_hvacAction_database(timestamp, action)
+        self.db_request.push_to_hvac_action_database(timestamp, action)
 
     def send_action_to_hvac(self, action):
         """Send action query to the HVAC service."""
-        r = requests.get(f"{self.HOST}/api/hvac/{self.TOKEN}/{action}/{self.TICKS}")
-        details = json.loads(r.text)
-        print(details, flush=True)
+        try:
+            r = requests.get(
+                f"{HOST}/api/hvac/{TOKEN}/{action}/{self.ticks}", timeout=10
+            )
+            details = json.loads(r.text)
+            print(details, flush=True)
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e}")
 
     def save_event_to_database(self, timestamp, temperature):
         """Save sensor data into database."""
         try:
-            self.dbRequest.push_to_temperature_database(timestamp, temperature)
-            pass
+            self.db_request.push_to_temperature_database(timestamp, temperature)
         except requests.exceptions.RequestException as e:
             print(f"An error occurred: {e}")
-            pass
 
 
 if __name__ == "__main__":
     app = App()
     app.start()
-
-    app.dbRequest.close_DB_conn()
+    app.db_request.close_DB_conn()
