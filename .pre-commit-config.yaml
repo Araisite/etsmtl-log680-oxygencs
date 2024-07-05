@@ -1,7 +1,0 @@
-repos:
-  - repo: local
-    hooks:
-      - id: linting-hook
-        name: lintinghook
-        entry: hooks/pre-commit
-        language: system

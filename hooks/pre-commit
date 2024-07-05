@@ -1,23 +1,23 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Ensure Python executable and scripts are in the PATH
-export PATH=%LOCALAPPDATA%/Programs/Python/Python312/python.exe:%LOCALAPPDATA%/Programs/Python/Python312/Scripts:$PATH
+export PATH=$LOCALAPPDATA/Programs/Python/Python312/python.exe:$LOCALAPPDATA/Programs/Python/Python312/Scripts:$PATH
 
 files=$(git diff --cached --name-only --diff-filter=ACM "*.py" | tr '\n' ' ')
 
+if [ -z "$files" ]; then
+  echo "No Python files to lint. Skipping linting and formatting checks."
+  exit 0
+fi
+
 pylint $files
 pylint_exit=$?
-
 
 black --check $files
 black_exit=$?
 
 echo "The result of python pylint module: $pylint_exit"
 echo "The result of python black module: $black_exit"
-echo "For the 2 lines above anything different of 0 is not good..."
-echo ""
-echo "Will commit in 3 seconds whatever the previous results were..."
-sleep 3
 
 if [ $pylint_exit -ne 0 ] || [ $black_exit -ne 0 ]; then
    echo "Linting or formatting check failed. Commit aborted."
