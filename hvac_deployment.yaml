@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hvac-controller
+  namespace: grp01eq13-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mon-app
+  template:
+    metadata:
+      labels:
+        app: mon-app
+    spec:
+      containers:
+      - name: hvac-container
+        image: 
+        env:
+        - name: HVAC_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: hvac-config
+              key: HVAC_HOST
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
