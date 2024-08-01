@@ -15,7 +15,9 @@ spec:
     spec:
       containers:
       - name: hvac-container
-        image: 
+        image: marcusphan2518/log680-devops:latest
+        ports:
+        - containerPort: 8080
         env:
         - name: HVAC_HOST
           valueFrom:

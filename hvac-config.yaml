@@ -4,7 +4,7 @@ metadata:
   name: hvac-config
   namespace: grp01eq13-namespace
 data: 
-  HVAC_HOST: 
+  HVAC_HOST: "http://159.203.50.162"
   TEMP_LOW: "20"
   TEMP_HIGH: "60"
   NB_TICKS: "10" 
