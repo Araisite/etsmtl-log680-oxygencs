@@ -3,8 +3,10 @@ kind: ConfigMap
 metadata:
   name: hvac-config
   namespace: grp01eq13-namespace
-data: 
-  HOST: http://159.203.50.162
-  T_MIN: "20"
-  T_MAX: "60"
-  DATABASE_URL: 157.230.69.113
+data:
+  DB_HOST: "157.230.69.113"
+  DB_DATABASE: "db01eq13"
+  DB_USER: "user01eq13"
+  HVAC_HOST: "http://159.203.50.162/"
+  T_MAX: "22"
+  T_MIN: "18"
