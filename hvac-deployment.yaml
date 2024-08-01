@@ -2,7 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hvac-deployment
-  namespace: grp01eq13-namespace
+  labels:
+    app: mon-app
 spec:
   replicas: 1
   selector:
