@@ -1,15 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress
+  name: hvac-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
     - http:
         paths:
-          - pathType: Prefix
-            path: "/"
+          - pathType: ImplementationSpecific
+            path: "/user01eq13/hvac(/|$)(.*)"
             backend:
               service:
                 name: oxygen-ingress

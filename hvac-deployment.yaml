@@ -3,31 +3,31 @@ kind: Deployment
 metadata:
   name: hvac-deployment
   labels:
-    app: mon-app
+    app: hvac
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mon-app
+      app: hvac
   template:
     metadata:
       labels:
-        app: mon-app
+        app: hvac
     spec:
       containers:
-      - name: hvac-container
-        image: marcusphan2518/log680-devops:latest
-        ports:
-        - containerPort: 8080
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        envFrom:
-        - configMapRef:
-            name: hvac-config
-        - secretRef:
-            name: hvac-secret
+        - name: hvac-container
+          image: marcusphan2518/log680-devops:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "30m"
+              memory: "64Mi"
+            limits:
+              cpu: "50m"
+              memory: "128Mi"
+          envFrom:
+            - configMapRef:
+                name: hvac-config
+            - secretRef:
+                name: hvac-secret
