@@ -9,7 +9,7 @@ spec:
     - http:
         paths:
           - pathType: Prefix
-            path: "/oxygencs-grp1-eq13"
+            path: "/"
             backend:
               service:
                 name: oxygen-ingress
